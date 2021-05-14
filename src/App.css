@@ -1,5 +1,20 @@
 * {
   margin: 0;
+  /* padding: 5px; */
+}
+
+.app {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 20px;
+}
+
+.app__left {
+  flex: 0.9;
+}
+
+body {
+  background: #f5f6fa;
 }
 
 .app__header {
@@ -7,4 +22,15 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+
+.app__stats {
+  display: flex;
+  justify-content: space-between;
+}
+
+@media (max-width: 400px) {
+  .app {
+    flex-direction: column;
+  }
 }
