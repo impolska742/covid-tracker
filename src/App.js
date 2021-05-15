@@ -4,48 +4,44 @@ import { MenuItem, FormControl, Select, CardContent } from "@material-ui/core";
 import InfoBox from "./InfoBox";
 import Map from "./Map";
 import { Card } from "@material-ui/core";
+import Table from "./Table";
+import { sortData } from "./util";
+
 function App() {
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState("worldwide");
   const [countryInfo, setCountryInfo] = useState({});
+  const [tableData, setTableData] = useState([]);
 
   const url = "https://disease.sh/v3/covid-19/countries";
+  const initialUrl = "https://disease.sh/v3/covid-19/all";
 
-  // useEffect(() => {
-  //   const getData = async () => {
-  //     const response = await fetch(url);
-  //     const data = await response.json();
-  //     const countries = data.map((country) => ({
-  //       name: country.country,
-  //       value: country.countryInfo.iso3,
-  //     }));
-  //     setCountries(countries);
-  //   };
-  //   getData();
-  // }, [url]);
+  useEffect(async () => {
+    await fetch(initialUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        setCountryInfo(data);
+      });
+  }, []);
 
   const onCountryChange = async (event) => {
     const countryCode = event.target.value;
-    // console.log("YOOOOOOOOOOOO >>>>>>>>>>", countryCode);
-
-    // https://disease.sh/v3/covid-19/all
-    // https://disease.sh/v3/covid-19/countries/[COUNTRY_CODE]
     setCountry(countryCode);
 
     const url =
       countryCode === "worldwide"
-        ? `https://disease.sh/v3/covid-19/all`
+        ? initialUrl
         : `https://disease.sh/v3/covid-19/countries/${countryCode}`;
 
     await fetch(url)
       .then((response) => response.json())
       .then((data) => {
         setCountry(countryCode);
-
-        // All of the data from the country response
         setCountryInfo(data);
       });
   };
+
+  // console.log(countryInfo);
 
   useEffect(() => {
     const getCountriesData = async () => {
@@ -56,6 +52,11 @@ function App() {
             name: country.country,
             value: country.countryInfo.iso2,
           }));
+
+          // console.log("dataaaa>>>>>>", data);
+
+          const sortedData = sortData(data);
+          setTableData(sortedData);
           setCountries(countries);
         });
     };
@@ -85,17 +86,29 @@ function App() {
         </div>
 
         <div className="app__stats">
-          <InfoBox title="Coronavirus Cases" cases={123} total={2000} />
-          <InfoBox title="Recovered" cases={1234} total={3000} />
-          <InfoBox title="Deaths" cases={12345} total={4000} />
+          <InfoBox
+            title="Coronavirus Cases"
+            cases={countryInfo.todayCases}
+            total={countryInfo.cases}
+          />
+          <InfoBox
+            title="Recovered"
+            cases={countryInfo.todayRecovered}
+            total={countryInfo.recovered}
+          />
+          <InfoBox
+            title="Deaths"
+            cases={countryInfo.todayDeaths}
+            total={countryInfo.deaths}
+          />
         </div>
         <Map />
       </div>
+
       <Card className="app__right">
-        {/* Table - Country Cases */}
-        {/* Graph */}
         <CardContent>
           <h3>Live cases by country</h3>
+          <Table countries={tableData} />
           <h3>World wide new cases</h3>
         </CardContent>
       </Card>

@@ -29,7 +29,7 @@ body {
   justify-content: space-between;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 900px) {
   .app {
     flex-direction: column;
   }
